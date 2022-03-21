@@ -2,14 +2,17 @@ pipeline {
     agent any
 
     stages {
-        stage("build") {
+        stage("setup local cluster") {
             steps {
-                echo 'Building the application...'
+                crc start
+                eval $(crc oc-env)
+                oc login -u developer https://api.crc.testing:6443
+                
             }
         }
-        stage("test") {
+        stage("build") {
             steps {
-                echo 'Testing the application...'
+                oc apply -f buildconfig-spring-petclinic.yaml
             }        
         }
         stage("deploy") {
